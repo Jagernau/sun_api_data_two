@@ -23,6 +23,7 @@ def get_all_objects(db: Session):
                         (SimCard.status == 4, "Статус не известен"),
                     ]
                 ).label("sim_status"),
+                CellOperator.name.label("cell_operator"),
                 Contragent.ca_uid_contragent,
                 Contragent.ca_name_contragent,
                 Contragent.ca_inn,
@@ -40,8 +41,10 @@ def get_all_objects(db: Session):
             ).outerjoin(
                 SimCard, CaObject.imei == SimCard.terminal_imei
             ).outerjoin(
+                CellOperator, SimCard.sim_cell_operator == CellOperator.id
+            ).outerjoin(
                 Contragent, CaObject.contragent_id == Contragent.ca_id
-            ).all()
+            ).order_by(CaObject.id.desc()).limit(20).all()
     db.close()
     return result
 

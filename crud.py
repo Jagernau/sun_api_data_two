@@ -30,8 +30,8 @@ def get_all_objects(db: Session):
                 Contragent.ca_kpp,
                 Contragent.key_manager,
                 Contragent.service_manager,
-                CaObject.ok_desk_id,
-                Contragent.ok_desk_id,
+                CaObject.ok_desk_id.label("obj_ok_id"),
+                Contragent.ok_desk_id.label("contragent_ok_id"),
 
             ).outerjoin(
                 MonitoringSystem, CaObject.sys_mon_id == MonitoringSystem.mon_sys_id

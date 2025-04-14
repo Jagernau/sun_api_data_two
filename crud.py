@@ -29,7 +29,10 @@ def get_all_objects(db: Session):
                 Contragent.ca_inn,
                 Contragent.ca_kpp,
                 Contragent.key_manager,
-                Contragent.service_manager
+                Contragent.service_manager,
+                CaObject.ok_desk_id,
+                Contragent.ok_desk_id,
+
             ).outerjoin(
                 MonitoringSystem, CaObject.sys_mon_id == MonitoringSystem.mon_sys_id
             ).outerjoin(

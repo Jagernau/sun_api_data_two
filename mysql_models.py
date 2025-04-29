@@ -31,6 +31,52 @@ t_ICCID_меньше_19 = Table(
 )
 
 
+class PPDKLogging(Base):
+    __tablename__ = 'PPDK_logging'
+
+    log_id = Column(Integer, primary_key=True, comment='Лог')
+    column_name = Column(String(200, 'utf8mb3_unicode_ci'), nullable=False, comment='Название колонки')
+    old_val = Column(String(700, 'utf8mb3_unicode_ci'), comment='Старое значение')
+    new_val = Column(String(700, 'utf8mb3_unicode_ci'), comment='Новое значение')
+    change_date = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), comment='Дата изменения')
+    exist_id = Column(Integer, comment='OST_order_no')
+    type_req = Column(String(100, 'utf8mb3_unicode_ci'), comment='Тип изменения')
+
+
+class PPDKTransneft(Base):
+    __tablename__ = 'PPDK_transneft'
+    __table_args__ = {'comment': 'Заявки по ППДК транснефть'}
+
+    id = Column(Integer, primary_key=True)
+    OST_order_no = Column(Integer, nullable=False, comment='№ заявки в ОСТ\\r\\n')
+    formation_date_app = Column(DateTime, nullable=False, comment='"Дата форми-\\r\\nрования заявки"\\r\\n')
+    OST = Column(String(200, 'utf8mb3_unicode_ci'), nullable=False, comment='ОСТ\\r\\n')
+    organization = Column(String(300, 'utf8mb3_unicode_ci'), nullable=False, comment='Организация\\r\\n')
+    type_work = Column(String(100, 'utf8mb3_unicode_ci'), nullable=False, comment='Вид работ\\r\\n')
+    vehicle_reg_plate = Column(String(100, 'utf8mb3_unicode_ci'), nullable=False, comment='"Регистра-\\r\\nционный знак ТС"\\r\\n')
+    vehic_invent_numb = Column(VARCHAR(200), comment='Инв. № ТС\\r\\n')
+    vehic_model = Column(String(300, 'utf8mb3_unicode_ci'), nullable=False, comment='Марка, модель ТС')
+    vehicle_type = Column(String(200, 'utf8mb3_unicode_ci'), comment='Тип ТС\\r\\n')
+    fault = Column(String(300, 'utf8mb3_unicode_ci'), comment='Неисправность\\r\\n')
+    comment = Column(VARCHAR(300), nullable=False, comment='Комментарий\\r\\n')
+    date_first_initial = Column(DateTime, nullable=False, comment='"План. дата работ (перво-\\r\\nначальная предложенная заказчиком)"\\r\\n')
+    plan_date_work = Column(DateTime, nullable=False, comment='План. дата работ (оконча-\\r\\nтельная)')
+    repair_area = Column(VARCHAR(700), comment='Площадка ремонта\\r\\n')
+    date_transfer_MVDP = Column(DateTime, comment='Дата передачи в МВДП\\r\\n')
+    date_agreement_contrac = Column(DateTime, comment='Дата согласования Исполнителем\\r\\n')
+    processing_time = Column(DateTime, comment='Срок обработки\\r\\n')
+    performer = Column(String(300, 'utf8mb3_unicode_ci'), comment='Исполнитель\\r\\n')
+    date_centralized = Column(DateTime, comment='Дата и время Централизованной приемки работ\\r\\n')
+    date_acceptance = Column(DateTime, comment='Дата и время приемки работ в ОСТ\\r\\n')
+    dat_accept_works_OST = Column(DateTime, comment='Время приемки работ в ОСТ (в формате чч:мм)\\r\\n')
+    status_req = Column(String(100, 'utf8mb3_unicode_ci'), comment='Статус\\r\\n')
+    dat_closing_app = Column(DateTime, comment='Дата закрытия заявки\\r\\n')
+    comment_primary_doc = Column(String(300, 'utf8mb3_unicode_ci'), comment='Комментарий, первичный документ из ППДК ОСТ\\r\\n')
+    summary_act = Column(String(300, 'utf8mb3_unicode_ci'), comment='Сводный акт (в Модуле)\\r\\n')
+    completion_date = Column(DateTime, comment='Дата завершения работ в ОСТ\\r\\n')
+    days_overdue = Column(Integer, comment='Кол-во дней просрочки\\r\\n')
+
+
 class AuthGroup(Base):
     __tablename__ = 'auth_group'
     __table_args__ = {'comment': 'Таблица для хранения групп пользователей ЦМС'}
@@ -62,6 +108,24 @@ class DevicesVendor(Base):
 
     id = Column(Integer, primary_key=True)
     vendor_name = Column(VARCHAR(35), comment='Название фирмы производителя терминалов')
+
+
+class DiscountClient(Base):
+    __tablename__ = 'discount_client'
+    __table_args__ = {'comment': 'Таблица с вариантами скидок'}
+
+    dis_cl_id = Column(Integer, primary_key=True, comment='ID Скидки')
+    dis_cl_name = Column(String(100, 'utf8mb3_unicode_ci'), nullable=False, comment='Название Скидки')
+    dis_cl_rate = Column(Integer, nullable=False, comment='Процент')
+
+
+class DiscountObj(Base):
+    __tablename__ = 'discount_obj'
+    __table_args__ = {'comment': 'Варианты скидок на объекты'}
+
+    dis_obj_id = Column(Integer, primary_key=True, comment='ID скидки на объекты')
+    dis_obj_name = Column(String(100, 'utf8mb3_unicode_ci'), nullable=False, comment='Название скидок на объекты')
+    dis_obj_rate = Column(Integer, nullable=False, comment='Процент скидки на объект')
 
 
 class DjangoContentType(Base):
@@ -298,6 +362,7 @@ class RequestsFromOKDESK(Base):
     specifications = Column(JSON, comment='Спецификации Заявки')
     observers = Column(JSON, comment='Наблюдатели')
     assignee = Column(JSON, comment='Исполнители')
+    parameters = Column(JSON, comment='Параметры заявки')
 
 
 class SensorVendor(Base):
@@ -691,6 +756,18 @@ class DevicesCommand(Base):
     devices_brand = relationship('DevicesBrand')
 
 
+class DiscountClientLink(Base):
+    __tablename__ = 'discount_client_link'
+    __table_args__ = {'comment': 'Связка клиент скидки для клиентов'}
+
+    dis_cl_link_id = Column(Integer, primary_key=True, comment='ID связи')
+    cl_id = Column(ForeignKey('Contragents.ca_id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID клиента')
+    dis_id = Column(ForeignKey('discount_client.dis_cl_id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID скидки')
+
+    cl = relationship('Contragent')
+    dis = relationship('DiscountClient')
+
+
 class EquipmentWarehouse(Base):
     __tablename__ = 'equipment_warehouse'
     __table_args__ = {'comment': 'Таблица склада'}
@@ -759,6 +836,17 @@ class DevicesDiagnostic(Base):
 
     device = relationship('Device')
     programmer = relationship('AuthUser')
+
+
+class DiscountObjLink(Base):
+    __tablename__ = 'discount_obj_link'
+
+    dis_obj_link_id = Column(Integer, primary_key=True)
+    obj_id = Column(ForeignKey('ca_objects.id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID объекта')
+    dis_id = Column(ForeignKey('discount_obj.dis_obj_id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID скидки под объекты')
+
+    dis = relationship('DiscountObj')
+    obj = relationship('CaObject')
 
 
 class GroupObjectRetran(Base):
@@ -838,3 +926,45 @@ class SimCard(Base):
     itprogrammer = relationship('AuthUser')
     Cell_operator = relationship('CellOperator')
     sim_device = relationship('Device')
+
+
+class Billing(Base):
+    __tablename__ = 'billing'
+    __table_args__ = {'comment': 'Таблица снимок параметров билинга за день'}
+
+    bil_id = Column(Integer, primary_key=True, comment='ID билинга')
+    sys_mon_id = Column(ForeignKey('monitoring_system.mon_sys_id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID системы мониторинга')
+    sys_mon_price = Column(Integer, nullable=False, comment='Стоимость СМ для КЛ')
+    retrans_id = Column(ForeignKey('object_retranslators.retranslator_id', ondelete='RESTRICT', onupdate='RESTRICT'), index=True, comment='ID ретрансляции')
+    retrans_name = Column(String(50, 'utf8mb3_unicode_ci'), comment='Название ретрансляции')
+    retrans_price = Column(Integer, comment='Цена ретрансляции')
+    obj_id = Column(ForeignKey('ca_objects.id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID объекта в БД')
+    obj_name = Column(VARCHAR(100), nullable=False, comment='Название объекта')
+    sim_id = Column(ForeignKey('sim_cards.sim_id', ondelete='RESTRICT', onupdate='RESTRICT'), index=True, comment='ID СИМКАРТЫ')
+    sim_operat_name = Column(String(50, 'utf8mb3_unicode_ci'), comment='Имя оператора')
+    sim_price = Column(Integer, comment='Цена сим для КЛ')
+    client_id = Column(ForeignKey('Contragents.ca_id', ondelete='RESTRICT', onupdate='RESTRICT'), index=True, comment='ID клиента')
+    client_name = Column(String(300, 'utf8mb3_unicode_ci'), comment='Имя клиента')
+    client_inn = Column(String(200, 'utf8mb3_unicode_ci'), comment='ИНН Клиента')
+    discount_client = Column(JSON, comment="СКИДКИ КЛИЕНТА\\r\\n[{'dis_id': 1, 'dis_name': 'Лояльность'},\\r\\n {'dis_id': 2, 'dis_name': 'Кол-во объектов > 50'},\\r\\n]")
+    discount_client_rate = Column(Integer, comment='Итоговый процент Скидки')
+    obj_status_id = Column(ForeignKey('object_statuses.status_id', ondelete='RESTRICT', onupdate='RESTRICT'), nullable=False, index=True, comment='ID статуса объекта')
+    discount_obj = Column(JSON, comment="СКИДКИ КЛИЕНТА [{'dis_id': 1, 'dis_name': 'Лояльность'}, {'dis_id': 2, 'dis_name': 'Дружественный'}, ]")
+    discount_obj_rate = Column(Integer, comment='Процент скидок на объект')
+    record_time = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"), comment='Время создания записи')
+    obj_status_name = Column(String(50, 'utf8mb3_unicode_ci'), nullable=False, comment='Имя статуса объекта')
+    obj_group_name = Column(VARCHAR(400), comment='Название группы объектов как в СМ')
+    obj_group_id = Column(String(400, 'utf8mb3_unicode_ci'), nullable=False, comment='ИД группы объектов')
+    obj_id_in_sys = Column(String(300, 'utf8mb3_unicode_ci'), nullable=False, comment='ID объекта в системе мониторинга')
+    sys_mon_name = Column(String(100, 'utf8mb3_unicode_ci'), nullable=False, comment='Название системы мониторинга')
+    client_login = Column(VARCHAR(400), comment='Логин клиента')
+    client_kpp = Column(String(200, 'utf8mb3_unicode_ci'), comment='Клиентский КПП')
+    total_sum = Column(Integer, comment='Итоговая сумма')
+    obj_imei = Column(String(100, 'utf8mb3_unicode_ci'), comment='IMEI объекта')
+
+    client = relationship('Contragent')
+    obj = relationship('CaObject')
+    obj_status = relationship('ObjectStatus')
+    retrans = relationship('ObjectRetranslator')
+    sim = relationship('SimCard')
+    sys_mon = relationship('MonitoringSystem')

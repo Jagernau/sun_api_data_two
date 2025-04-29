@@ -1,6 +1,5 @@
 from subprocess import call
 import config
-import os
 
 
 def generate_mysql_models(

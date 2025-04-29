@@ -44,3 +44,20 @@ async def get_all_objects(
         return objects
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/detail_ok_obj_id/{obj_ok_id}")
+async def get_object_detail(
+    obj_ok_id: int,
+    token: str = Depends(verify_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Получение данных по конкретному объекту по его obj_ok_id
+    """
+    try:
+        obj = crud.get_object_by_ok_id(db, obj_ok_id)
+        if not obj:
+            raise HTTPException(status_code=404, detail="Object not found")
+        return obj
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

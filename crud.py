@@ -47,7 +47,7 @@ def get_all_objects(db: Session):
                 CellOperator, SimCard.sim_cell_operator == CellOperator.id
             ).outerjoin(
                 Contragent, CaObject.contragent_id == Contragent.ca_id
-            ).order_by(CaObject.id.desc()).limit(20).all()
+            ).order_by(CaObject.id.desc()).all()
     db.close()
     return result
 

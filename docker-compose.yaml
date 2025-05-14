@@ -7,7 +7,6 @@ services:
   web:
     build:
       context: .
-      
     environment:
       DB_HOST: ${DB_HOST}
       MYSQL_USER: ${MYSQL_USER}
@@ -23,7 +22,9 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt/live/apisuntel.duckdns.org/fullchain.pem:/etc/nginx/ssl/cert.pem     # Монтируем cert.pem
+      - /etc/letsencrypt/live/apisuntel.duckdns.org/privkey.pem:/etc/nginx/ssl/key.pem       # Монтируем key.pem
     ports:
-      - 88:88
+      - "88:88"                                 # Можно заменить на "443:443", если хотите использовать стандартный порт HTTPS
     networks:
       - sun_network

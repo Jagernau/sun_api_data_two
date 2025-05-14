@@ -5,6 +5,9 @@ import db_connect
 from sqlalchemy.orm import Session
 import crud
 
+import json
+from fastapi.responses import JSONResponse
+
 app = FastAPI()
 
 # Задаем токен для проверки
@@ -41,7 +44,7 @@ async def get_all_objects(
         objects = crud.get_all_objects(db)
         if not objects:
             raise HTTPException(status_code=404, detail="Objects not found")
-        return objects
+        return JSONResponse(content=objects)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -58,6 +61,6 @@ async def get_object_detail(
         obj = crud.get_object_by_ok_id(db, obj_ok_id)
         if not obj:
             raise HTTPException(status_code=404, detail="Object not found")
-        return obj
+        return JSONResponse(content=obj)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

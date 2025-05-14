@@ -77,7 +77,7 @@ def get_all_objects(db: Session):
                 Contragent, CaObject.contragent_id == Contragent.ca_id
             ).order_by(CaObject.id.desc()).all()
     db.close()
-    return result
+    return [dict(row._asdict()) for row in result]
 
 
 def get_object_by_ok_id(db: Session, obj_ok_id: int):
@@ -153,4 +153,4 @@ def get_object_by_ok_id(db: Session, obj_ok_id: int):
     ).filter(
         CaObject.ok_desk_id == obj_ok_id
     ).first()
-    return result
+    return [dict(row._asdict()) for row in result]

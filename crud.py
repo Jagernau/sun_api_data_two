@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, outerjoin
 from mysql_models import *
-from sqlalchemy import case
+from sqlalchemy import case, func
 
 
 def get_all_objects(db: Session):
@@ -8,6 +8,34 @@ def get_all_objects(db: Session):
                 CaObject.id,
                 MonitoringSystem.mon_sys_name,
                 CaObject.object_name,
+                # Вместо предыдущего regexp_substr используем:
+                func.upper(
+                    func.replace(
+                        func.replace(
+                            func.replace(
+                                func.replace(
+                                    func.replace(
+                                        func.replace(
+                                            func.replace(
+                                                func.regexp_substr(
+                                                    CaObject.object_name,
+                                                    r'(?i)([АВЕКМНОРСТУХAВЕКМНОРСТУХ]{1}\d{3}[АВЕКМНОРСТУХAВЕКМНОРСТУХ]{2}|\d{4}[АВЕКМНОРСТУХAВЕКМНОРСТУХ]{2})'
+                                                ),
+                                                'A', 'А'
+                                            ),
+                                            'B', 'В'
+                                        ),
+                                        'E', 'Е'
+                                    ),
+                                    'K', 'К'
+                                ),
+                                'M', 'М'
+                            ),
+                            'H', 'Н'
+                        ),
+                        'O', 'О'  # Добавляем замену для O
+                    )
+                ).label('gos_number'),
                 ObjectStatus.status,
                 CaObject.owner_user,
                 CaObject.imei,
@@ -57,6 +85,33 @@ def get_object_by_ok_id(db: Session, obj_ok_id: int):
         CaObject.id,
         MonitoringSystem.mon_sys_name,
         CaObject.object_name,
+        func.upper(
+            func.replace(
+                func.replace(
+                    func.replace(
+                        func.replace(
+                            func.replace(
+                                func.replace(
+                                    func.replace(
+                                        func.regexp_substr(
+                                            CaObject.object_name,
+                                            r'(?i)([АВЕКМНОРСТУХAВЕКМНОРСТУХ]{1}\d{3}[АВЕКМНОРСТУХAВЕКМНОРСТУХ]{2}|\d{4}[АВЕКМНОРСТУХAВЕКМНОРСТУХ]{2})'
+                                        ),
+                                        'A', 'А'
+                                    ),
+                                    'B', 'В'
+                                ),
+                                'E', 'Е'
+                            ),
+                            'K', 'К'
+                        ),
+                        'M', 'М'
+                    ),
+                    'H', 'Н'
+                ),
+                'O', 'О'  # Добавляем замену для O
+            )
+        ).label('gos_number'),
         ObjectStatus.status,
         CaObject.owner_user,
         CaObject.imei,
